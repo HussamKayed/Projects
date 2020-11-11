@@ -1,0 +1,159 @@
+#define _CRT_SECURE_NO_DEPRECATE
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+int sorted_list_insert(struct tstr_node**, struct tstr_node*);
+int sorted_list_remove(struct tstr_node**, struct tstr_node*);
+void clearKeyboardBuffer();
+void initializeNodes(struct tstr_node**);
+void printLinkedList(struct tstr_node**);
+
+struct tstr_node
+{
+	char* nodeData;
+	struct tstr_node* nextNode;
+};
+
+struct tstr_node fourthNode;
+struct tstr_node thirdNode;
+struct tstr_node secondNode;
+struct tstr_node firstNode;
+struct tstr_node* pointerToLinkedList;
+
+typedef enum bool
+{
+	FALSE = 0,
+	TRUE = 1
+
+}boolean;
+
+int main(void)
+{	//variables used for testing
+	struct tstr_node firstItem = { "SCOFIELD", NULL };
+	struct tstr_node secondItem = {"GEOFFERY", NULL};
+	struct tstr_node* newNode = &firstItem;
+	struct tstr_node* head = &firstItem;
+
+	initializeNodes(&head);
+	printLinkedList(head);	
+	printf("%d\n",sorted_list_remove(&head, newNode));
+	printf("%d\n", sorted_list_insert(&head, &secondItem));
+	printLinkedList(head);
+	
+	return 0;
+}
+
+//Clearing buffer in case there is an input
+void clearKeyboardBuffer()
+{
+	while (getchar != '\n')
+	{
+		continue;
+	}
+}
+
+//Insertion to the linked list
+int sorted_list_insert(struct tstr_node **head, struct tstr_node* pstr_node)
+{
+	struct tstr_node** firstItem = head;
+	struct tstr_node* tempPointer = (*head)->nextNode;
+	boolean isDone = FALSE;
+	boolean success = FALSE;
+	char* copyingString = " ";
+
+	while (!isDone)
+	{
+		if (strcmp(pstr_node->nodeData, (*head)->nodeData))
+		{
+			pstr_node->nextNode = (*head)->nextNode;    //point to the following node that follows the first item of the list
+			(*head)->nextNode = pstr_node;				//make the sent node to the function one of the list
+			copyingString = pstr_node->nodeData;		//copying the data coming from the node that is sent to the function
+			pstr_node->nodeData = (*head)->nodeData;	//taking the node data from the first item, switching it to the second item
+			(*head)->nodeData = copyingString;			//taking the node data of the pointer sent to the function
+			isDone = TRUE;
+			success = TRUE;
+		}
+		else
+		{
+			head = (*head)->nextNode; // change first node to the second node
+		}
+	}
+
+	//Post-insertion
+	head = firstItem;	//going back to the original head or first element in the linkedList
+	if (success)        //insertion is success if the returned value is 0
+		return 0;
+	return -1;
+}
+
+//Removal from the linked list
+int sorted_list_remove(struct tstr_node** ppstr_head, struct tstr_node *pstr_node)
+{
+	struct tstr_node* firstItem = &(**ppstr_head);
+	boolean isDone = FALSE;
+	boolean success = FALSE;
+
+	while (!isDone)
+	{
+		if ((*ppstr_head)->nodeData == pstr_node->nodeData)			//comparing node strings
+		{
+			(*ppstr_head)->nextNode = pstr_node->nextNode;	//changing node addresses in order to remove the non-needed node
+			(*ppstr_head)->nodeData = NULL;
+			pstr_node->nextNode = NULL;
+
+			isDone = TRUE;
+			success = TRUE;
+		}
+		else
+			(*ppstr_head) = (*ppstr_head)->nextNode;
+	}
+
+	//Post-removal
+	*ppstr_head = firstItem;			//going back to the original head or first element in the linkedList
+	if (success)
+		return 0;
+	return -1;
+}
+
+void initializeNodes(struct tstr_node** head)
+{
+	fourthNode.nodeData = "SCOFIELD", fourthNode.nextNode = NULL;
+	thirdNode.nodeData = "MICHAEL", thirdNode.nextNode = &fourthNode;
+	secondNode.nodeData = "KAYED", secondNode.nextNode = &thirdNode;
+	firstNode.nodeData = "HUSSAM", firstNode.nextNode = &secondNode;
+	
+	pointerToLinkedList = &firstNode;
+
+	*head = &firstNode;
+	
+}
+
+void printLinkedList(struct tstr_node* head)
+{
+	struct tstr_node** copyingPointer = &head;
+	boolean isDone = FALSE;
+
+	if (head->nodeData != NULL)
+		printf("%s\n", head->nodeData);
+
+
+	while (!isDone)
+	{
+		if ((head)->nextNode != NULL)
+		{
+			(head) = (head)->nextNode;
+			
+		}
+		else
+		{
+			isDone = TRUE;
+			break;
+		}
+		if(head->nodeData != NULL)
+		printf("%s\n", head->nodeData);
+	}
+	getchar();
+	(head) = *copyingPointer;
+}
